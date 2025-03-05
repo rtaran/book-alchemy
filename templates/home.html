@@ -1,4 +1,3 @@
-<!-- templates/home.html -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,26 +6,40 @@
 <body>
     <h1>Our Library</h1>
 
+    <!-- Search Form -->
+    <form method="GET" action="{{ url_for('home') }}">
+        <input type="text" name="search" placeholder="Search books..."
+               value="{{ search_query }}">
+        <button type="submit">Search</button>
+        {% if search_query %}
+            <a href="{{ url_for('home') }}">Clear</a>
+        {% endif %}
+    </form>
+
     <!-- Sorting Controls -->
     <div class="sorting">
         Sort by:
-        <a href="{{ url_for('home', sort='title') }}">Title</a> |
-        <a href="{{ url_for('home', sort='author') }}">Author</a>
+        <a href="{{ url_for('home', sort='title', search=search_query) }}">Title</a> |
+        <a href="{{ url_for('home', sort='author', search=search_query) }}">Author</a>
     </div>
 
     <!-- Book List -->
     <div class="books">
-        {% for book in books %}
-            <div class="book">
-                <img src="https://covers.openlibrary.org/b/isbn/{{ book.isbn }}-M.jpg"
-                     alt="{{ book.title }} cover"
-                     onerror="this.style.display='none'">
-                <h3>{{ book.title }}</h3>
-                <p>by {{ book.author.name }}</p>
-                <p>Published: {{ book.publication_date }}</p>
-                <p>ISBN: {{ book.isbn }}</p>
-            </div>
-        {% endfor %}
+        {% if books %}
+            {% for book in books %}
+                <div class="book">
+                    <img src="https://covers.openlibrary.org/b/isbn/{{ book.isbn }}-M.jpg"
+                         alt="{{ book.title }} cover"
+                         onerror="this.style.display='none'">
+                    <h3>{{ book.title }}</h3>
+                    <p>by {{ book.author.name }}</p>
+                    <p>Published: {{ book.publication_date }}</p>
+                    <p>ISBN: {{ book.isbn }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No books found matching "{{ search_query }}"</p>
+        {% endif %}
     </div>
 </body>
 </html>

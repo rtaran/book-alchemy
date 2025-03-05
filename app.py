@@ -56,18 +56,32 @@ def add_book():
     return render_template('add_book.html', authors=authors)
 
 
-# Home Route with Sorting
+# Home Route with Search and Sorting
 @app.route('/')
 def home():
     sort_by = request.args.get('sort', 'title')
+    search_query = request.args.get('search', '')
 
-    if sort_by == 'author':
-        books = Book.query.join(Author).order_by(Author.name).all()
+    # Base query
+    if search_query:
+        books = Book.query.filter(Book.title.ilike(f'%{search_query}%'))
     else:
-        books = Book.query.order_by(Book.title).all()
+        books = Book.query
 
-    return render_template('home.html', books=books, sort_by=sort_by)
+    # Apply sorting
+    if sort_by == 'author':
+        books = books.join(Author).order_by(Author.name)
+    else:
+        books = books.order_by(Book.title)
 
+    books = books.all()
+
+    return render_template(
+        'home.html',
+        books=books,
+        sort_by=sort_by,
+        search_query=search_query
+    )
 
 if __name__ == '__main__':
     app.run(debug=True)
