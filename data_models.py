@@ -6,10 +6,11 @@ db = SQLAlchemy()
 class Author(db.Model):
     __tablename__ = 'authors'  # Explicit table name
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    birth_date = db.Column(db.Date, nullable=False)
-    date_of_death = db.Column(db.Date, nullable=True)
+    birth_date = db.Column(db.Date)
+    nationality = db.Column(db.String(50))
+    date_of_death = db.Column(db.Date)
 
     # Relationship: One author can have many books
     books = db.relationship('Book', backref='author', lazy=True)

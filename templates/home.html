@@ -1,44 +1,65 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Library</title>
+    <title>Digital Library</title>
+        <style>
+            .search-box {
+                margin-bottom: 20px;
+            }
+            .search-box form {
+                display: flex;
+                gap: 10px;
+            }
+            .search-box input[type="text"] {
+                flex: 1;
+                max-width: 300px;
+                padding: 5px;
+            }
+        </style>
 </head>
 <body>
-    <h1>Our Library</h1>
+    <h1>Digital Library</h1>
+    <div class="sort-options">
 
-    <!-- Search Form -->
-    <form method="GET" action="{{ url_for('home') }}">
-        <input type="text" name="search" placeholder="Search books..."
-               value="{{ search_query }}">
-        <button type="submit">Search</button>
-        {% if search_query %}
-            <a href="{{ url_for('home') }}">Clear</a>
-        {% endif %}
-    </form>
+        <div class="search-box">
+            <form method="GET" action="{{ url_for('home') }}">
+                <input type="text" name="q" placeholder="Search books or authors..."
+                       value="{{ request.args.get('q', '') }}">
+                <button type="submit">Search</button>
+                {% if request.args.get('q') %}
+                    <a href="{{ url_for('home') }}">Clear</a>
+                {% endif %}
+            </form>
+        </div>
 
-    <!-- Sorting Controls -->
-    <div class="sorting">
-        Sort by:
-        <a href="{{ url_for('home', sort='title', search=search_query) }}">Title</a> |
-        <a href="{{ url_for('home', sort='author', search=search_query) }}">Author</a>
+        <form>
+            <label>Sort by:</label>
+            <select name="sort" onchange="this.form.submit()">
+                <option value="title" {% if request.args.get('sort') == 'title' %}selected{% endif %}>Title</option>
+                <option value="author" {% if request.args.get('sort') == 'author' %}selected{% endif %}>Author</option>
+            </select>
+        </form>
     </div>
 
-    <!-- Book List -->
-    <div class="books">
+    <a href="{{ url_for('add_author') }}">Add Author</a>
+    <a href="{{ url_for('add_book') }}">Add Book</a>
+
+    <div class="book-list">
         {% if books %}
-            {% for book in books %}
-                <div class="book">
-                    <img src="https://covers.openlibrary.org/b/isbn/{{ book.isbn }}-M.jpg"
-                         alt="{{ book.title }} cover"
-                         onerror="this.style.display='none'">
-                    <h3>{{ book.title }}</h3>
-                    <p>by {{ book.author.name }}</p>
-                    <p>Published: {{ book.publication_date }}</p>
-                    <p>ISBN: {{ book.isbn }}</p>
-                </div>
-            {% endfor %}
+        {% for book in books %}
+        <div class="book-item">
+            <img class="cover-image"
+                 src="https://covers.openlibrary.org/b/isbn/{{ book.isbn }}-M.jpg"
+                 alt="{{ book.title }} cover">
+            <div>
+                <h3>{{ book.title }} ({{ book.publication_year }})</h3>
+                <p>by {{ book.author.name }}</p>
+                <p>ISBN: {{ book.isbn }}</p>
+            </div>
+        </div>
+        {% endfor %}
         {% else %}
-            <p>No books found matching "{{ search_query }}"</p>
+            <p>No books found matching "{{ search_term }}"</p>
         {% endif %}
     </div>
 </body>
