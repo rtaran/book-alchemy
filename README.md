@@ -31,5 +31,5 @@ A modern web application for managing your book collection, built with Flask and
 ### Setup
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/digital-library.git
+   git clone https://github.com/rtaran/book-alchemy.git
    cd digital-library
