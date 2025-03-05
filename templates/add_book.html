@@ -6,10 +6,24 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
   </head>
   <body>
+  <form action="/add_book" method="POST">
+    <label for="title">Book Title:</label>
+    <input type="text" id="title" name="title" required><br><br>
 
-  <form action="/add_author" method="POST">
-  <!-- Add the form here -->
+    <label for="isbn">ISBN:</label>
+    <input type="text" id="isbn" name="isbn" required><br><br>
+
+    <label for="publication_year">Publication Year:</label>
+    <input type="number" id="publication_year" name="publication_year" required><br><br>
+
+    <label for="author">Author:</label>
+    <select id="author" name="author_id" required>
+      <!-- This would typically be populated dynamically with authors from the database -->
+      <option value="">Select an Author</option>
+      <!-- Example: <option value="1">Author Name</option> -->
+    </select><br><br>
+
+    <input type="submit" value="Add Book">
   </form>
-
   </body>
 </html>
