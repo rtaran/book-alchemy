@@ -1,29 +1,31 @@
+<!-- templates/add_book.html -->
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  </head>
-  <body>
-  <form action="/add_book" method="POST">
-    <label for="title">Book Title:</label>
-    <input type="text" id="title" name="title" required><br><br>
+<html>
+<head>
+    <title>Add Book</title>
+</head>
+<body>
+    <h1>Add New Book</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
-    <label for="isbn">ISBN:</label>
-    <input type="text" id="isbn" name="isbn" required><br><br>
-
-    <label for="publication_year">Publication Year:</label>
-    <input type="number" id="publication_year" name="publication_year" required><br><br>
-
-    <label for="author">Author:</label>
-    <select id="author" name="author_id" required>
-      <!-- This would typically be populated dynamically with authors from the database -->
-      <option value="">Select an Author</option>
-      <!-- Example: <option value="1">Author Name</option> -->
-    </select><br><br>
-
-    <input type="submit" value="Add Book">
-  </form>
-  </body>
+    <form method="POST">
+        <label>Title: <input type="text" name="title" required></label>
+        <label>Publication Date: <input type="date" name="publication_date"></label>
+        <label>ISBN: <input type="text" name="isbn" required></label>
+        <label>Author:
+            <select name="author_id" required>
+                {% for author in authors %}
+                    <option value="{{ author.id }}">{{ author.name }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <button type="submit">Add Book</button>
+    </form>
+</body>
 </html>

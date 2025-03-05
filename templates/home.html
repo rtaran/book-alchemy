@@ -1,16 +1,32 @@
+<!-- templates/home.html -->
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  </head>
-  <body>
+<html>
+<head>
+    <title>Library</title>
+</head>
+<body>
+    <h1>Our Library</h1>
 
-    {% for book in books %}
-    <div> <h3>{{ book.title }}</h3>
+    <!-- Sorting Controls -->
+    <div class="sorting">
+        Sort by:
+        <a href="{{ url_for('home', sort='title') }}">Title</a> |
+        <a href="{{ url_for('home', sort='author') }}">Author</a>
     </div>
-    {% endfor %}
 
-  </body>
+    <!-- Book List -->
+    <div class="books">
+        {% for book in books %}
+            <div class="book">
+                <img src="https://covers.openlibrary.org/b/isbn/{{ book.isbn }}-M.jpg"
+                     alt="{{ book.title }} cover"
+                     onerror="this.style.display='none'">
+                <h3>{{ book.title }}</h3>
+                <p>by {{ book.author.name }}</p>
+                <p>Published: {{ book.publication_date }}</p>
+                <p>ISBN: {{ book.isbn }}</p>
+            </div>
+        {% endfor %}
+    </div>
+</body>
 </html>
