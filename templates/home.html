@@ -1,66 +1,58 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Digital Library</title>
-        <style>
-            .search-box {
-                margin-bottom: 20px;
-            }
-            .search-box form {
-                display: flex;
-                gap: 10px;
-            }
-            .search-box input[type="text"] {
-                flex: 1;
-                max-width: 300px;
-                padding: 5px;
-            }
-        </style>
-</head>
-<body>
-    <h1>Digital Library</h1>
-    <div class="sort-options">
+{% extends "base.html" %}
 
-        <div class="search-box">
-            <form method="GET" action="{{ url_for('home') }}">
-                <input type="text" name="q" placeholder="Search books or authors..."
-                       value="{{ request.args.get('q', '') }}">
-                <button type="submit">Search</button>
-                {% if request.args.get('q') %}
-                    <a href="{{ url_for('home') }}">Clear</a>
+{% block content %}
+<div class="bg-white p-4 rounded-lg shadow-md mb-6">
+    <form method="GET" class="flex gap-4 items-center">
+        <input type="text" name="q" placeholder="Search books or authors..." 
+               value="{{ search_term }}" class="flex-1 p-2 border rounded">
+        <select name="sort" onchange="this.form.submit()" class="p-2 border rounded">
+            <option value="title" {% if sort_by == 'title' %}selected{% endif %}>Sort by Title</option>
+            <option value="author" {% if sort_by == 'author' %}selected{% endif %}>Sort by Author</option>
+        </select>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Search</button>
+        {% if search_term %}
+            <a href="{{ url_for('home') }}" class="text-red-600 hover:text-red-800">Clear</a>
+        {% endif %}
+    </form>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for book in books %}
+    <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+        <img src="https://covers.openlibrary.org/b/isbn/{{ book.isbn }}-M.jpg" 
+             alt="{{ book.title }}" 
+             class="w-full h-48 object-cover rounded-t-lg">
+        <div class="p-4">
+            <h3 class="text-xl font-semibold mb-2">
+                <a href="{{ url_for('book_detail', book_id=book.id) }}" 
+                   class="text-blue-600 hover:text-blue-800">
+                    {{ book.title }}
+                </a>
+            </h3>
+            <p class="text-gray-600 mb-2">by {{ book.author.name }}</p>
+            <div class="flex items-center mb-2">
+                {% if book.rating > 0 %}
+                    {% for i in range(book.rating) %}
+                        <span class="text-yellow-400">★</span>
+                    {% endfor %}
+                {% else %}
+                    <span class="text-gray-400">No ratings yet</span>
                 {% endif %}
+            </div>
+            <form action="{{ url_for('delete_author', author_id=book.author.id) }}" 
+                  method="POST">
+                <button type="submit" 
+                        class="text-red-600 hover:text-red-800 text-sm"
+                        onclick="return confirm('Delete this author and all their books?')">
+                    Delete Author
+                </button>
             </form>
         </div>
-
-        <form>
-            <label>Sort by:</label>
-            <select name="sort" onchange="this.form.submit()">
-                <option value="title" {% if request.args.get('sort') == 'title' %}selected{% endif %}>Title</option>
-                <option value="author" {% if request.args.get('sort') == 'author' %}selected{% endif %}>Author</option>
-            </select>
-        </form>
     </div>
-
-    <a href="{{ url_for('add_author') }}">Add Author</a>
-    <a href="{{ url_for('add_book') }}">Add Book</a>
-
-    <div class="book-list">
-        {% if books %}
-        {% for book in books %}
-        <div class="book-item">
-            <img class="cover-image"
-                 src="https://covers.openlibrary.org/b/isbn/{{ book.isbn }}-M.jpg"
-                 alt="{{ book.title }} cover">
-            <div>
-                <h3>{{ book.title }} ({{ book.publication_year }})</h3>
-                <p>by {{ book.author.name }}</p>
-                <p>ISBN: {{ book.isbn }}</p>
-            </div>
-        </div>
-        {% endfor %}
-        {% else %}
-            <p>No books found matching "{{ search_term }}"</p>
-        {% endif %}
-    </div>
-</body>
-</html>
+    {% else %}
+    <p class="text-gray-600 col-span-full text-center py-8">
+        {% if search_term %}No books found matching "{{ search_term }}"{% else %}No books in library{% endif %}
+    </p>
+    {% endfor %}
+</div>
+{% endblock %}

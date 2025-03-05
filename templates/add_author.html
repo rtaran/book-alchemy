@@ -16,13 +16,18 @@
         <label>Name:</label>
         <input type="text" name="name" required><br>
 
+
         <label>Birth Date:</label>
-        <input type="date" name="birth_date"><br>
+        <input type="date" name="birth_date" required>
 
         <label>Date of Death:</label>
-        <input type="date" name="date_of_death"><br>
+        <input type="date" name="date_of_death">
 
         <input type="submit" value="Add Author">
+
+        <label>Nationality:</label>
+        <input type="text" name="nationality">
+
     </form>
     <a href="{{ url_for('home') }}">Back to Home</a>
 </body>

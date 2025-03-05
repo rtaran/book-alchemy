@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Book Recommendations{% endblock %}
+
+{% block content %}
+<div class="bg-white p-4 rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold mb-4">AI Book Recommendations</h2>
+
+    {% if recommendation %}
+    <div class="bg-gray-50 p-4 rounded-md mb-4">
+        <p class="text-lg">{{ recommendation }}</p>
+    </div>
+    {% else %}
+    <p class="text-gray-600">No recommendations generated yet. Try adding some books first!</p>
+    {% endif %}
+
+    <a href="{{ url_for('home') }}" class="text-blue-600 hover:text-blue-800 mt-4 inline-block">
+        ← Back to Library
+    </a>
+</div>
+{% endblock %}

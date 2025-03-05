@@ -1,40 +1,25 @@
 from flask_sqlalchemy import SQLAlchemy
 
-# Initialize database instance
 db = SQLAlchemy()
 
 class Author(db.Model):
-    __tablename__ = 'authors'  # Explicit table name
-
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(100), nullable=False, unique=True)
     birth_date = db.Column(db.Date)
-    nationality = db.Column(db.String(50))
     date_of_death = db.Column(db.Date)
-
-    # Relationship: One author can have many books
-    books = db.relationship('Book', backref='author', lazy=True)
+    nationality = db.Column(db.String(50))  # Keep this line
+    books = db.relationship('Book', backref='author', cascade='all, delete-orphan')
 
     def __repr__(self):
-        return f'<Author {self.name}>'
-
-    def __str__(self):
-        return f'{self.name} (Born: {self.birth_date}, Died: {self.date_of_death or "N/A"})'
-
+        return f"<Author {self.name}>"
 
 class Book(db.Model):
-    __tablename__ = 'books' # Explicit table name
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    isbn = db.Column(db.String(20), unique=True, nullable=False)
-    title = db.Column(db.String(200), nullable=False)
-    publication_year = db.Column(db.Integer, nullable=False)
-
-    # Foreign key linking each book to an author
-    author_id = db.Column(db.Integer, db.ForeignKey('authors.id'), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    isbn = db.Column(db.String(17), unique=True, nullable=False)
+    title = db.Column(db.String(100), nullable=False)
+    publication_year = db.Column(db.Integer)
+    rating = db.Column(db.Integer, default=0)
+    author_id = db.Column(db.Integer, db.ForeignKey('author.id'))
 
     def __repr__(self):
-        return f'<Book {self.title}>'
-
-    def __str__(self):
-        return f'"{self.title}" (ISBN: {self.isbn}, Published: {self.publication_year})'
+        return f"<Book {self.title}>"
