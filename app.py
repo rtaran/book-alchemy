@@ -61,7 +61,7 @@ def add_author():
                 name=request.form['name'],
                 birth_date=birth_date,
                 date_of_death=date_of_death,
-                nationality = request.form.get('nationality', None))
+                nationality=request.form.get('nationality', None))
 
             db.session.add(author)
             db.session.commit()
@@ -258,4 +258,4 @@ def add_sample_books():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+    app.run(debug=True, port=5001)

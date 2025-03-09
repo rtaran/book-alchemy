@@ -3,19 +3,25 @@
 {% block title %}Book Recommendations{% endblock %}
 
 {% block content %}
-<div class="bg-white p-4 rounded-lg shadow-md">
-    <h2 class="text-2xl font-bold mb-4">AI Book Recommendations</h2>
-
-    {% if recommendation %}
-    <div class="bg-gray-50 p-4 rounded-md mb-4">
-        <p class="text-lg">{{ recommendation }}</p>
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">AI Book Recommendations</h2>
     </div>
-    {% else %}
-    <p class="text-gray-600">No recommendations generated yet. Try adding some books first!</p>
-    {% endif %}
+    <div class="card-content">
+        {% if recommendation %}
+        <div class="recommendation-box">
+            <p>{{ recommendation }}</p>
+        </div>
+        {% else %}
+        <div class="empty-recommendation">
+            <p>No recommendations generated yet. Try adding some books first!</p>
+            <p>Our AI system needs books in your library to generate personalized recommendations.</p>
+        </div>
+        {% endif %}
 
-    <a href="{{ url_for('home') }}" class="text-blue-600 hover:text-blue-800 mt-4 inline-block">
-        ← Back to Library
-    </a>
+        <a href="{{ url_for('home') }}" class="btn back-link">
+            ← Back to Library
+        </a>
+    </div>
 </div>
 {% endblock %}
