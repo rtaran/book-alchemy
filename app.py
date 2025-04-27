@@ -1,5 +1,5 @@
+import requests
 from flask import Flask, render_template, request, redirect, url_for, flash
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
 from data_models import db, Author, Book
 from sqlalchemy import or_
@@ -96,10 +96,10 @@ def add_book():
 
         except IntegrityError as e:
             db.session.rollback()  # Reset the session
-            flash('Error: This ISBN already exists in the database!', 'danger')
+            flash('Error: This ISBN already exists in the database!', 'warning')
         except Exception as e:
             db.session.rollback()
-            flash(f'Error adding book: {str(e)}', 'danger')
+            flash(f'Error adding book: {str(e)}', 'warning')
 
     return render_template('add_book.html', authors=authors)
 
@@ -117,9 +117,38 @@ def delete_author(author_id):
     return redirect(url_for('home'))
 
 @app.route('/recommend')
-def recommend_books():  # This function name determines the endpoint
-    # ... recommendation logic ...
-    return render_template('recommendations.html')
+def recommend_books():
+    books = Book.query.all()
+
+    if not books:
+        recommendation = None
+    else:
+        # Build a nice input prompt for the AI
+        book_list = "\n".join([f"{book.title} by {book.author.name} (Rating: {book.rating})" for book in books])
+        prompt = f"Based on the following books and their ratings, suggest a new book I might enjoy:\n\n{book_list}"
+
+        # RapidAPI ChatGPT API setup
+        url = "https://chatgpt-42.p.rapidapi.com/chat"
+        payload = {
+            "messages": [
+                {"role": "user", "content": prompt}
+            ],
+            "model": "gpt-4o-mini"
+        }
+        headers = {
+            "x-rapidapi-key": os.getenv('RAPIDAPI_KEY'),  # <-- your real key
+            "x-rapidapi-host": "chatgpt-42.p.rapidapi.com",
+            "Content-Type": "application/json"
+        }
+
+        try:
+            response = requests.post(url, json=payload, headers=headers)
+            result = response.json()
+            recommendation = result['choices'][0]['message']['content']
+        except Exception as e:
+            recommendation = f"Error generating recommendation: {str(e)}"
+
+    return render_template('recommendations.html', recommendation=recommendation)
 
 def add_sample_books():
     with app.app_context():
