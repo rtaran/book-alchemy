@@ -39,9 +39,9 @@
                 {% endif %}
             </div>
             <form action="{{ url_for('delete_author', author_id=book.author.id) }}"
-                  method="POST" onsubmit="return confirm('Delete this author and all their books?')">
+                  method="POST" onsubmit="return confirm('Delete this book?')">
                 <button type="submit" class="delete-button">
-                    Delete Author
+                    Delete Book
                 </button>
             </form>
         </div>

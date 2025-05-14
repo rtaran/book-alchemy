@@ -48,6 +48,13 @@ def home():
 def add_author():
     if request.method == 'POST':
         try:
+            # Check if author already exists
+            author_name = request.form['name']
+            existing_author = Author.query.filter_by(name=author_name).first()
+            if existing_author:
+                flash(f'Author "{author_name}" already exists in the database!', 'warning')
+                return redirect(url_for('add_author'))
+
             # Convert date strings to Python date objects
             birth_date = None
             if request.form['birth_date']:
@@ -58,7 +65,7 @@ def add_author():
                 date_of_death = datetime.strptime(request.form['date_of_death'], '%Y-%m-%d').date()
 
             author = Author(
-                name=request.form['name'],
+                name=author_name,
                 birth_date=birth_date,
                 date_of_death=date_of_death,
                 nationality=request.form.get('nationality', None))
@@ -110,10 +117,37 @@ def book_detail(book_id):
 
 @app.route('/author/<int:author_id>/delete', methods=['POST'])
 def delete_author(author_id):
-    author = Author.query.get_or_404(author_id)
-    db.session.delete(author)
+    # Find the first book by this author and redirect to delete_book
+    book = Book.query.filter_by(author_id=author_id).first()
+    if book:
+        return redirect(url_for('delete_book', book_id=book.id))
+    else:
+        # If no books found, just delete the author
+        author = Author.query.get_or_404(author_id)
+        db.session.delete(author)
+        db.session.commit()
+        flash(f'Author {author.name} deleted!', 'success')
+        return redirect(url_for('home'))
+
+@app.route('/book/<int:book_id>/delete', methods=['POST'])
+def delete_book(book_id):
+    book = Book.query.get_or_404(book_id)
+    book_title = book.title
+
+    # Check if this is the author's only book
+    author = book.author
+    author_books_count = Book.query.filter_by(author_id=author.id).count()
+
+    db.session.delete(book)
+
+    # If this was the author's only book, delete the author too
+    if author_books_count == 1:
+        db.session.delete(author)
+        flash(f'Book "{book_title}" and author {author.name} deleted!', 'success')
+    else:
+        flash(f'Book "{book_title}" deleted!', 'success')
+
     db.session.commit()
-    flash(f'Author {author.name} and all their books deleted!', 'success')
     return redirect(url_for('home'))
 
 @app.route('/recommend')
