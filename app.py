@@ -115,7 +115,7 @@ def book_detail(book_id):
     book = Book.query.get_or_404(book_id)
     return render_template('book_detail.html', book=book)
 
-@app.route('/author/<int:author_id>/delete', methods=['POST'])
+@app.route('/author/<int:author_id>/delete', methods=['GET', 'POST'])
 def delete_author(author_id):
     # Find the first book by this author and redirect to delete_book
     book = Book.query.filter_by(author_id=author_id).first()
@@ -129,7 +129,7 @@ def delete_author(author_id):
         flash(f'Author {author.name} deleted!', 'success')
         return redirect(url_for('home'))
 
-@app.route('/book/<int:book_id>/delete', methods=['POST'])
+@app.route('/book/<int:book_id>/delete', methods=['GET', 'POST'])
 def delete_book(book_id):
     book = Book.query.get_or_404(book_id)
     book_title = book.title
